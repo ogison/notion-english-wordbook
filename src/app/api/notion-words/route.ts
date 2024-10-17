@@ -16,13 +16,20 @@ export async function GET() {
         word: page.properties.word.rich_text[0].plain_text || "",
         meaning: page.properties.meaning.rich_text[0].plain_text || "",
         example: page.properties.example.rich_text[0].plain_text || "",
+        status: page.properties.status.status.name || "",
       };
     });
-    return NextResponse.json(words); // 取得したデータをJSON形式で返す
+    return NextResponse.json(words);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch words" },
-      { status: 500 }
-    );
+    if (error instanceof Error) {
+      return NextResponse.json(
+        {
+          error: "Failed to fetch words",
+          message: error.message,
+          // stack: error.stack, // 開発時のみ
+        },
+        { status: 500 }
+      );
+    }
   }
 }
