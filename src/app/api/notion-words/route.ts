@@ -1,3 +1,4 @@
+import { WORD } from "@/types";
 import { Client } from "@notionhq/client";
 import { NextResponse } from "next/server";
 
@@ -10,7 +11,7 @@ export async function GET() {
       database_id: databaseId!,
     });
 
-    const words = response.results.map((page: any) => {
+    const words: WORD[] = response.results.map((page: any) => {
       return {
         id: page.id,
         word: page.properties.word.rich_text?.[0]?.plain_text || "",

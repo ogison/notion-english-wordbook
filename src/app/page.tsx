@@ -5,7 +5,9 @@ import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Plus, Shuffle } from "lucide-react";
+import { Check, Eye, EyeOff, Plus, Shuffle } from "lucide-react";
+import { Status } from "@/types/enums";
+import styles from "@/styles/Home.module.css";
 
 export default function Home() {
   const [words, setWords] = useState<WORD[]>([]);
@@ -14,6 +16,7 @@ export default function Home() {
   const [newMeaning, setNewMeaning] = useState("");
   const [newExample, setNewExample] = useState("");
   const [showMeaning, setShowMeaning] = useState(false);
+  const [isFlipping, setIsFlipping] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
   useEffect(() => {
@@ -37,6 +40,43 @@ export default function Home() {
 
   const toggleMeaning = () => {
     setShowMeaning(!showMeaning);
+  };
+
+  /**
+   * 覚えた単語のステータスを更新する
+   */
+  const updateStatus = async (id: string, status: string) => {
+    let nextStatus = Status.InProgress;
+    console.log(status);
+    if (status === Status.InProgress) {
+      nextStatus = Status.Done;
+    }
+    const param = {
+      id: id,
+      status: nextStatus,
+    };
+
+    try {
+      await axios.post("/api/update-status", param);
+      await setWords((prevWords) =>
+        prevWords.map((word) =>
+          word.id === id
+            ? {
+                ...word,
+                status: nextStatus,
+              }
+            : word
+        )
+      );
+      setIsFlipping(true);
+      setTimeout(() => {
+        setIsFlipping(false);
+        getRandomWord();
+      }, 700);
+    } catch (error) {
+      setError("Failed to update status");
+      console.error(error);
+    }
   };
 
   const getRandomWord = () => {
@@ -84,41 +124,74 @@ export default function Home() {
       </Card>
 
       {currentWord && (
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <h2 className="text-2xl font-bold mb-4 text-center">
-              {currentWord.word}
-            </h2>
-            {showMeaning && (
-              <>
-                <p className="text-lg mb-2">
-                  <strong>意味:</strong> {currentWord.meaning}
-                </p>
-                <p className="text-lg italic">
-                  <strong>例文:</strong> {currentWord.example}
-                </p>
-              </>
-            )}
-            <div className="flex justify-center space-x-4 mt-6">
-              <Button onClick={toggleMeaning}>
-                {showMeaning ? (
-                  <EyeOff className="mr-2 h-4 w-4" />
-                ) : (
-                  <Eye className="mr-2 h-4 w-4" />
-                )}
-                {showMeaning ? "意味を隠す" : "意味を表示"}
-              </Button>
-              <Button onClick={getRandomWord}>
-                <Shuffle className="mr-2 h-4 w-4" /> 次の単語
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div
+          className={`${styles.perspective} ${
+            isFlipping ? styles["animate-flip"] : ""
+          }`}
+        >
+          <Card className="mb-6">
+            <CardContent className="p-6">
+              <h2 className="text-2xl font-bold mb-4 text-center">
+                {currentWord.word}
+              </h2>
+              {showMeaning && (
+                <>
+                  <p className="text-lg mb-2">
+                    <strong>意味:</strong> {currentWord.meaning}
+                  </p>
+                  <p className="text-lg italic">
+                    <strong>例文:</strong> {currentWord.example}
+                  </p>
+                </>
+              )}
+              <div className="flex justify-center space-x-4 mt-6">
+                <Button onClick={toggleMeaning}>
+                  {showMeaning ? (
+                    <EyeOff className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Eye className="mr-2 h-4 w-4" />
+                  )}
+                  {showMeaning ? "意味を隠す" : "意味を表示"}
+                </Button>
+                <Button
+                  onClick={() =>
+                    updateStatus(currentWord.id, currentWord.status)
+                  }
+                >
+                  <Check className="mr-2 h-4 w-4" /> 覚えた！
+                </Button>
+                <Button onClick={getRandomWord}>
+                  <Shuffle className="mr-2 h-4 w-4" /> 次の単語
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {words.length === 0 && (
         <p className="text-center text-gray-600">単語を追加してください。</p>
       )}
+
+      <style jsx global>{`
+        .perspective {
+          perspective: 1000px;
+        }
+        .animate-flip {
+          animation: flip 0.25s;
+        }
+        @keyframes flip {
+          0% {
+            transform: rotateY(0deg);
+          }
+          100% {
+            transform: rotateY(360deg);
+          }
+        }
+        .transform-style-preserve-3d {
+          transform-style: preserve-3d;
+        }
+      `}</style>
     </div>
   );
 }
