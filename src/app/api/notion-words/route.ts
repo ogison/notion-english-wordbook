@@ -13,9 +13,9 @@ export async function GET() {
     const words = response.results.map((page: any) => {
       return {
         id: page.id,
-        word: page.properties.word.rich_text[0].plain_text || "",
-        meaning: page.properties.meaning.rich_text[0].plain_text || "",
-        example: page.properties.example.rich_text[0].plain_text || "",
+        word: page.properties.word.rich_text?.[0]?.plain_text || "",
+        meaning: page.properties.meaning.rich_text?.[0]?.plain_text || "",
+        example: page.properties.example.rich_text?.[0]?.plain_text || "",
         status: page.properties.status.status.name || "",
       };
     });
