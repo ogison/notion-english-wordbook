@@ -19,24 +19,36 @@ export default function Home() {
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
-  useEffect(() => {
-    const fetchWords = async () => {
-      try {
-        const response = await axios.get("/api/notion-words");
-        const data = await response.data;
-        setWords(data);
-        setCurrentWord(data[0]);
-      } catch (error) {
-        setError("Failed to load words");
-        console.error(error);
-      }
-    };
+  const fetchWords = async () => {
+    try {
+      const response = await axios.get("/api/notion-words");
+      const data = await response.data;
+      setWords(data);
+      setCurrentWord(data[0]);
+    } catch (error) {
+      setError("Failed to load words");
+      console.error(error);
+    }
+  };
 
+  useEffect(() => {
     fetchWords();
   }, []);
 
-  // TODO 単語を追加する機能を実装
-  const addWord = async () => {};
+  const addWord = async () => {
+    const param = {
+      word: newWord,
+      meaning: newMeaning,
+      example: newExample,
+    };
+    try {
+      await axios.post("/api/add-word", param);
+      await fetchWords();
+    } catch (error) {
+      setError("Failed to add word");
+      console.error(error);
+    }
+  };
 
   const toggleMeaning = () => {
     setShowMeaning(!showMeaning);
@@ -172,26 +184,6 @@ export default function Home() {
       {words.length === 0 && (
         <p className="text-center text-gray-600">単語を追加してください。</p>
       )}
-
-      <style jsx global>{`
-        .perspective {
-          perspective: 1000px;
-        }
-        .animate-flip {
-          animation: flip 0.25s;
-        }
-        @keyframes flip {
-          0% {
-            transform: rotateY(0deg);
-          }
-          100% {
-            transform: rotateY(360deg);
-          }
-        }
-        .transform-style-preserve-3d {
-          transform-style: preserve-3d;
-        }
-      `}</style>
     </div>
   );
 }
