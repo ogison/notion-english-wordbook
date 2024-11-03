@@ -1,11 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
-import { Input } from "./ui/input";
 import { addWord } from "@/lib/api";
-import { WORD } from "@/types";
+import { formSchema, WORD } from "@/types";
+import { useForm } from "react-hook-form";
+import { Form } from "./ui/form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import FormInputField from "./ui/formInputField";
 
 interface WordNewCardProps {
   setWords: (words: WORD[]) => void;
@@ -18,46 +22,51 @@ const WordNewCard: React.FC<WordNewCardProps> = ({
   setCurrentWord,
   setError,
 }) => {
-  const [newWord, setNewWord] = useState<string>("");
-  const [newMeaning, setNewMeaning] = useState<string>("");
-  const [newExample, setNewExample] = useState<string>("");
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      word: "",
+      meaning: "",
+      example: "",
+    },
+  });
+
+  const onSubmit = () => {
+    addWord(form.getValues(), setWords, setCurrentWord, setError);
+  };
+
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle>新しい単語を追加</CardTitle>
+        <CardTitle>新しい単語帳を追加</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <Input
-            placeholder="単語"
-            value={newWord}
-            onChange={(e) => setNewWord(e.target.value)}
-          />
-          <Input
-            placeholder="意味"
-            value={newMeaning}
-            onChange={(e) => setNewMeaning(e.target.value)}
-          />
-          <Input
-            placeholder="例文"
-            value={newExample}
-            onChange={(e) => setNewExample(e.target.value)}
-          />
-          <Button
-            onClick={() =>
-              addWord(
-                newWord,
-                newMeaning,
-                newExample,
-                setWords,
-                setCurrentWord,
-                setError
-              )
-            }
-            className="w-full"
-          >
-            <Plus className="mr-2 h-4 w-4" /> 単語を追加
-          </Button>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormInputField
+                form={form}
+                name="word"
+                label="英単語"
+                placeholder="英単語を入力してください"
+              />
+              <FormInputField
+                form={form}
+                name="meaning"
+                label="和訳"
+                placeholder="和訳を入力してください"
+              />
+              <FormInputField
+                form={form}
+                name="example"
+                label="例文"
+                placeholder="例文を入力してください"
+              />
+              <Button type="submit" className="w-full">
+                <Plus className="mr-2 h-4 w-4" /> 単語を追加
+              </Button>
+            </form>
+          </Form>
         </div>
       </CardContent>
     </Card>

@@ -4,8 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getRandomWord } from "@/utils/";
 import { Button } from "./ui/button";
 import { WORD } from "@/types";
-import { Check, Eye, EyeOff, Shuffle } from "lucide-react";
-import { Type } from "@/types/enums";
+import { Annoyed, Check, Eye, EyeOff, Laugh, Shuffle } from "lucide-react";
+import { Status, Type } from "@/types/enums";
 import { updateStatus } from "@/lib/api";
 
 interface WordBookCardProps {
@@ -19,6 +19,9 @@ interface WordBookCardProps {
   setError: (error: string) => void;
 }
 
+/*
+ * 英訳または和訳を表示する
+ */
 const toggleMeaning = (
   showMeaning: boolean,
   setShowMeaning: (showMeaning: boolean) => void
@@ -37,8 +40,13 @@ const WordBookCard: React.FC<WordBookCardProps> = ({
   setError,
 }) => {
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 relative">
       <CardContent className="p-6">
+        {currentWord.status === Status.NotStarted ? (
+          <Annoyed className="mr-2 h-4 w-4" />
+        ) : (
+          <Laugh className="mr-2 h-4 w-4" />
+        )}
         <h2 className="text-2xl font-bold mb-4 text-center">
           {currentWord.type === Type.EnglishTranslation
             ? currentWord.meaning
@@ -47,7 +55,7 @@ const WordBookCard: React.FC<WordBookCardProps> = ({
         {showMeaning && (
           <>
             <p className="text-lg mb-2">
-              <strong>意味:</strong>{" "}
+              <strong>訳:</strong>{" "}
               {currentWord.type === Type.EnglishTranslation
                 ? currentWord.word
                 : currentWord.meaning}
@@ -64,7 +72,7 @@ const WordBookCard: React.FC<WordBookCardProps> = ({
             ) : (
               <Eye className="mr-2 h-4 w-4" />
             )}
-            {showMeaning ? "意味を隠す" : "意味を表示"}
+            {showMeaning ? "訳を隠す" : "訳を表示"}
           </Button>
           <Button
             onClick={() =>

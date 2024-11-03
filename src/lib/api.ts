@@ -1,9 +1,12 @@
-import { WORD } from "@/types";
+import { NEWWORD, WORD } from "@/types";
 import { Status } from "@/types/enums";
 import { getRandomWord } from "@/utils";
 import axios from "axios";
 import { Dispatch, SetStateAction } from "react";
 
+/*
+ * 単語帳一覧を取得
+ */
 export const fetchWords = async (
   setWords: (words: WORD[]) => void,
   setCurrentWord: (currentWord: WORD) => void,
@@ -20,18 +23,19 @@ export const fetchWords = async (
   }
 };
 
+/*
+ * 単語帳を追加
+ */
 export const addWord = async (
-  word: string,
-  meaning: string,
-  example: string,
+  form: NEWWORD,
   setWords: (words: WORD[]) => void,
   setCurrentWord: (currentWord: WORD) => void,
   setError: (error: string) => void
 ) => {
   const param = {
-    word,
-    meaning,
-    example,
+    word: form.word,
+    meaning: form.meaning,
+    example: form.example,
   };
   try {
     await axios.post("/api/add-word", param);
@@ -42,8 +46,8 @@ export const addWord = async (
   }
 };
 
-/**
- * 覚えた単語のステータスを更新する
+/*
+ * 覚えた単語帳のステータスを更新する
  */
 export const updateStatus = async (
   id: string,
