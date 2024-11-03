@@ -42,9 +42,9 @@ const WordBookCard: React.FC<WordBookCardProps> = ({
 }) => {
   return (
     <Suspense fallback={<LoadingIcon />}>
-      <Card className="mb-6 relative">
+      <Card className="mb-6 relative max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto p-4 sm:p-6">
         <CardContent className="p-6">
-          <Suspense fallback={<LoadingIcon />}>
+          <div className="flex items-center justify-between text-sm sm:text-base md:text-lg mb-4">
             <span>
               {words.findIndex((word) => word.id === currentWord.id) + 1}/
               {words.length}
@@ -54,27 +54,32 @@ const WordBookCard: React.FC<WordBookCardProps> = ({
             ) : (
               <Laugh className="mr-2 h-4 w-4" />
             )}
-          </Suspense>
-          <h2 className="text-2xl font-bold mb-4 text-center">
+          </div>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 text-center">
             {currentWord.type === Type.EnglishTranslation
               ? currentWord.meaning
               : currentWord.word}
           </h2>
           {showMeaning && (
             <>
-              <p className="text-lg mb-2">
-                <strong>訳:</strong>{" "}
-                {currentWord.type === Type.EnglishTranslation
-                  ? currentWord.word
-                  : currentWord.meaning}
-              </p>
-              <p className="text-lg italic">
-                <strong>例文:</strong> {currentWord.example}
-              </p>
+              <div className="text-sm sm:text-base md:text-lg space-y-2 mb-4">
+                <p className="text-lg mb-2">
+                  <strong>訳:</strong>{" "}
+                  {currentWord.type === Type.EnglishTranslation
+                    ? currentWord.word
+                    : currentWord.meaning}
+                </p>
+                <p className="text-lg italic">
+                  <strong>例文:</strong> {currentWord.example}
+                </p>
+              </div>
             </>
           )}
-          <div className="flex justify-center space-x-4 mt-6">
-            <Button onClick={() => toggleMeaning(showMeaning, setShowMeaning)}>
+          <div className="flex flex-wrap justify-center space-x-2 sm:space-x-4 mt-4 sm:mt-6">
+            <Button
+              onClick={() => toggleMeaning(showMeaning, setShowMeaning)}
+              className="flex items-center w-full sm:w-auto mb-2 sm:mb-0"
+            >
               {showMeaning ? (
                 <EyeOff className="mr-2 h-4 w-4" />
               ) : (
