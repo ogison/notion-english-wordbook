@@ -22,8 +22,8 @@ export default function Home() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6 text-center">
+    <div className="container mx-auto p-4 sm:p-6 md:p-8 lg:p-10 max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 md:mb-8 text-center">
         英語単語ランダム学習
       </h1>
 
@@ -53,7 +53,9 @@ export default function Home() {
       )}
 
       {words.length === 0 && (
-        <p className="text-center text-gray-600">単語を追加してください。</p>
+        <p className="text-center text-gray-600 text-sm sm:text-base md:text-lg">
+          単語を追加してください。
+        </p>
       )}
     </div>
   );

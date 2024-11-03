@@ -36,9 +36,11 @@ const WordNewCard: React.FC<WordNewCardProps> = ({
   };
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto p-4 sm:p-6">
       <CardHeader>
-        <CardTitle>新しい単語帳を追加</CardTitle>
+        <CardTitle className="text-lg sm:text-xl md:text-2xl text-center">
+          新しい単語帳を追加
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
