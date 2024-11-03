@@ -1,7 +1,7 @@
 "use client";
 import React, { Dispatch, SetStateAction, Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { getRandomWord } from "@/utils/";
+import { getNextWord } from "@/utils/";
 import { Button } from "./ui/button";
 import { WORD } from "@/types";
 import { Annoyed, Check, Eye, EyeOff, Laugh, Shuffle } from "lucide-react";
@@ -45,6 +45,10 @@ const WordBookCard: React.FC<WordBookCardProps> = ({
       <Card className="mb-6 relative">
         <CardContent className="p-6">
           <Suspense fallback={<LoadingIcon />}>
+            <span>
+              {words.findIndex((word) => word.id === currentWord.id) + 1}/
+              {words.length}
+            </span>
             {currentWord.status === Status.NotStarted ? (
               <Annoyed className="mr-2 h-4 w-4" />
             ) : (
@@ -81,8 +85,7 @@ const WordBookCard: React.FC<WordBookCardProps> = ({
             <Button
               onClick={() =>
                 updateStatus(
-                  currentWord.id,
-                  currentWord.status,
+                  currentWord,
                   setWords,
                   setIsFlipping,
                   words,
@@ -94,13 +97,21 @@ const WordBookCard: React.FC<WordBookCardProps> = ({
             >
               <Check className="mr-2 h-4 w-4" /> 覚えた！
             </Button>
-            <Button
-              onClick={() =>
-                getRandomWord(words, setCurrentWord, setShowMeaning)
-              }
-            >
-              <Shuffle className="mr-2 h-4 w-4" /> 次の単語
-            </Button>
+            {words.findIndex((word) => word.id === currentWord.id) <
+              words.length - 1 && (
+              <Button
+                onClick={() =>
+                  getNextWord(
+                    words,
+                    currentWord,
+                    setCurrentWord,
+                    setShowMeaning
+                  )
+                }
+              >
+                <Shuffle className="mr-2 h-4 w-4" /> 次の単語
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>

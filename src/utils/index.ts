@@ -1,14 +1,16 @@
 import { WORD } from "@/types";
 
 /*
- * ランダムな単語帳を取得
+ * 次の単語を取得
  */
-export const getRandomWord = (
+export const getNextWord = (
   words: WORD[],
+  currentWord: WORD,
   setCurrentWord: (currentWord: WORD) => void,
   setShowMeaning: (showMeaning: boolean) => void
 ) => {
-  const randomIndex = Math.floor(Math.random() * words.length);
-  setCurrentWord(words[randomIndex]);
+  const currentIndex = words.findIndex((word) => word.id === currentWord.id);
+  const nextIndex = (currentIndex + 1) % words.length;
+  setCurrentWord(words[nextIndex]);
   setShowMeaning(false);
 };
