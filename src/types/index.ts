@@ -4,4 +4,5 @@ export type WORD = {
   meaning: string;
   example: string;
   status: string;
+  type: string;
 };

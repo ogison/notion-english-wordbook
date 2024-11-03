@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Check, Eye, EyeOff, Plus, Shuffle } from "lucide-react";
-import { Status } from "@/types/enums";
+import { Status, Type } from "@/types/enums";
 import styles from "@/styles/Home.module.css";
 
 export default function Home() {
@@ -144,12 +144,17 @@ export default function Home() {
           <Card className="mb-6">
             <CardContent className="p-6">
               <h2 className="text-2xl font-bold mb-4 text-center">
-                {currentWord.word}
+                {currentWord.type === Type.EnglishTranslation
+                  ? currentWord.meaning
+                  : currentWord.word}
               </h2>
               {showMeaning && (
                 <>
                   <p className="text-lg mb-2">
-                    <strong>意味:</strong> {currentWord.meaning}
+                    <strong>意味:</strong>{" "}
+                    {currentWord.type === Type.EnglishTranslation
+                      ? currentWord.word
+                      : currentWord.meaning}
                   </p>
                   <p className="text-lg italic">
                     <strong>例文:</strong> {currentWord.example}
