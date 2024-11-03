@@ -1,6 +1,6 @@
 import { NEWWORD, WORD } from "@/types";
 import { Status } from "@/types/enums";
-import { getRandomWord } from "@/utils";
+import { getNextWord } from "@/utils";
 import axios from "axios";
 import { Dispatch, SetStateAction } from "react";
 
@@ -15,8 +15,9 @@ export const fetchWords = async (
   try {
     const response = await axios.get("/api/notion-words");
     const data = await response.data;
-    setWords(data);
-    setCurrentWord(data[0]);
+    const shuffledData = data.sort(() => Math.random() - 0.5);
+    setWords(shuffledData);
+    setCurrentWord(shuffledData[0]);
   } catch (error) {
     setError("Failed to load words");
     console.error(error);
@@ -50,8 +51,7 @@ export const addWord = async (
  * 覚えた単語帳のステータスを更新する
  */
 export const updateStatus = async (
-  id: string,
-  status: string,
+  currentWord: WORD,
   setWords: Dispatch<SetStateAction<WORD[]>>,
   setIsFlipping: (isFlipping: boolean) => void,
   words: WORD[],
@@ -60,11 +60,11 @@ export const updateStatus = async (
   setError: (error: string) => void
 ) => {
   let nextStatus = Status.InProgress;
-  if (status === Status.InProgress) {
+  if (currentWord.status === Status.InProgress) {
     nextStatus = Status.Done;
   }
   const param = {
-    id: id,
+    id: currentWord.id,
     status: nextStatus,
   };
 
@@ -72,7 +72,7 @@ export const updateStatus = async (
     await axios.post("/api/update-status", param);
     await setWords((prevWords) =>
       prevWords.map((word) =>
-        word.id === id
+        word.id === currentWord.id
           ? {
               ...word,
               status: nextStatus,
@@ -83,7 +83,14 @@ export const updateStatus = async (
     setIsFlipping(true);
     setTimeout(() => {
       setIsFlipping(false);
-      getRandomWord(words, setCurrentWord, setShowMeaning);
+      if (
+        words.findIndex((word) => word.id === currentWord.id) <
+        words.length - 1
+      ) {
+        getNextWord(words, currentWord, setCurrentWord, setShowMeaning);
+      } else {
+        fetchWords(setWords, setCurrentWord, setError);
+      }
     }, 700);
   } catch (error) {
     setError("Failed to update status");
