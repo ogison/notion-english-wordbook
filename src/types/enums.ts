@@ -1,5 +1,5 @@
 export enum Status {
-  NotStarted = "Not Started",
+  NotStarted = "Not started",
   InProgress = "In progress",
   Done = "Done",
 }
