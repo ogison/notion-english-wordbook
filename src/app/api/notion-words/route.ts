@@ -18,6 +18,7 @@ export async function GET() {
         meaning: page.properties.meaning.rich_text?.[0]?.plain_text || "",
         example: page.properties.example.rich_text?.[0]?.plain_text || "",
         status: page.properties.status.status.name || "",
+        type: page.properties.type?.select?.name || "",
       };
     });
     return NextResponse.json(words);
