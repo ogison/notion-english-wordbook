@@ -33,10 +33,9 @@ export async function GET(request: Request) {
       throw new Error("Failed to exchange code for access token");
     }
 
-    const data = await response.json();
-
     // TODO: セキュアにアクセストークンを保存する
     // 例: データベースやセッションに保存
+    // const data = await response.json();
 
     return NextResponse.redirect(new URL("/?success=true", request.url));
   } catch (error) {

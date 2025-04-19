@@ -26,7 +26,7 @@ export default function Home() {
       const response = await fetch("/api/notion/auth");
       const { authUrl } = await response.json();
       window.location.href = authUrl;
-    } catch (error) {
+    } catch {
       setError("Notion連携に失敗しました");
       setIsConnecting(false);
     }
