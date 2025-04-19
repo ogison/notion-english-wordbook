@@ -5,6 +5,8 @@ import styles from "@/styles/Home.module.css";
 import WordNewCard from "@/components/wordNewCard";
 import { fetchWords } from "@/lib/api";
 import WordBookCard from "@/components/wordBookCard";
+import { Button } from "@/components/ui/button";
+import { LogIn } from "lucide-react";
 
 export default function Home() {
   const [words, setWords] = useState<WORD[]>([]);
@@ -12,10 +14,23 @@ export default function Home() {
   const [showMeaning, setShowMeaning] = useState<boolean>(false);
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
   const [error, setError] = useState<string>();
+  const [isConnecting, setIsConnecting] = useState<boolean>(false);
 
   useEffect(() => {
     fetchWords(setWords, setCurrentWord, setError);
   }, []);
+
+  const handleNotionConnect = async () => {
+    setIsConnecting(true);
+    try {
+      const response = await fetch("/api/notion/auth");
+      const { authUrl } = await response.json();
+      window.location.href = authUrl;
+    } catch {
+      setError("Notion連携に失敗しました");
+      setIsConnecting(false);
+    }
+  };
 
   if (error) {
     return <div>{error}</div>;
@@ -26,6 +41,17 @@ export default function Home() {
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 md:mb-8 text-center">
         英語単語ランダム学習
       </h1>
+
+      <div className="text-center mb-8">
+        <Button
+          onClick={handleNotionConnect}
+          disabled={isConnecting}
+          className="inline-flex items-center"
+        >
+          <LogIn className="mr-2 h-4 w-4" />
+          Notionと連携する
+        </Button>
+      </div>
 
       <WordNewCard
         setWords={setWords}
